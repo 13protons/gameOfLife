@@ -3,7 +3,7 @@
   "description": "An HTML/JS/CSS app",
   "version": "0.0.1",
   "private": true,
-  "author": "John Doe",
+  "author": "Alan Languirand",
   "devDependencies": {
     "lineman": "~0.35.0"
   },
