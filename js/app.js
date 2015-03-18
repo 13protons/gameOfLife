@@ -1341,3 +1341,250 @@
     });
   }
 }).call(this);
+
+this["JST"] = this["JST"] || {};
+
+this["JST"]["app/templates/hello.us"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="hello">\n  ' +
+((__t = ( text )) == null ? '' : __t) +
+'\n</div>';
+
+}
+return __p
+};
+
+var conwaysBoard = {
+  cells: null,
+  generation: 0,
+  population: 0,
+  genTime: 0,
+  stepForward: function(){
+    var startStep = Date.now();
+    var board = this.createTemp();
+
+    for(var row = board.length - 1; row > -1; row--){
+      for(var col = board[row].length -1;col > -1; col--){
+        board[row][col] = this.liveOrDie(this.cells[row][col].isAlive(), this.determineLiveNeighbors(row, col));
+      }
+    }
+
+    this.syncTemp(board);
+    this.generation++;
+
+    //console.log(Date.now() - startStep);
+    this.genTime = (Date.now() - startStep);
+    return board;
+
+  },
+  countPopulation: function(){
+    var counter = 0;
+    for(var row = this.cells.length - 1; row > -1; row--){
+      for(var col = this.cells[row].length -1;col > -1; col--){
+        if(this.cells[row][col].isAlive()){counter++}
+      }
+    }
+    this.population = counter;
+    return counter;
+  },
+  createTemp: function(){
+    var board = [];
+    for(var i = 0; i < this.cells.length; i++){
+      board.push(this.cells[i].map(function(c){ return c.isAlive(); }));
+    }
+    return board;
+  },
+  syncTemp: function(board){
+    var count = 0;
+
+    for(var row = board.length - 1; row > -1; row--){
+      for(var col = board[row].length -1;col > -1; col--){
+        this.cells[row][col].setAlive( board[row][col] );
+        if(board[row][col]){count++;}
+      }
+    }
+    this.population = count;
+  },
+  newRandomBoard: function(num){
+    this.newBoard(num);
+    for(var row = 0; row < num; row++){
+      for(var col = 0; col < num; col++){
+        if(Math.random() > .5){
+            this.cells[row][col].setAlive( true );
+        }
+      }
+    }
+
+  },
+  newBoardFromString: function(str){
+    var size = Math.ceil(Math.sqrt(str.length));
+
+    this.newBoard(size);
+
+    var total = 0;
+    var board = [];
+    for(var row = 0; row < size; row++){
+      board.push([]);
+      for(var col = 0; col < size; col++){
+        if(total < str.length && parseInt(str.charAt(total))> 0){
+          board[row].push(true)
+        } else {
+          board[row].push(false)
+        }
+        total++;
+      }
+    }
+
+    this.syncTemp(board);
+
+    return board;
+  },
+  determineLiveNeighbors: function(row, col){
+
+    if(this.cells !== null){
+      var liveNeighbors = 0;
+
+      if(row > 0 ){ //find northern neighbors
+        r = row - 1;
+        liveNeighbors += addIfAlive( this.cells[r][col].isAlive() );
+        if((col - 1) > -1 ){ //find western neighbor
+          liveNeighbors += addIfAlive( this.cells[r][col-1].isAlive() );
+        }
+        if((col + 1) < this.cells[row].length ){ //find eastern neighbor
+          liveNeighbors += addIfAlive( this.cells[r][col+1].isAlive() );
+        }
+      }
+
+      if((col + 1) < this.cells[row].length ){ //find eastern neighbor
+        liveNeighbors += addIfAlive( this.cells[row][col+1].isAlive() );
+      }
+      if((col - 1) > -1 ){ //find western neighbor
+        liveNeighbors += addIfAlive( this.cells[row][col-1].isAlive() );
+      }
+
+      if((row + 1) < this.cells[row].length ){ //find southern neighbors
+        r = row + 1;
+        liveNeighbors += addIfAlive( this.cells[r][col].isAlive() );
+        if((col + 1) < this.cells[row].length ){ //find eastern neighbor
+          liveNeighbors += addIfAlive( this.cells[r][col+1].isAlive() );
+        }
+        if((col - 1) > -1 ){ //find western neighbor
+          liveNeighbors += addIfAlive( this.cells[r][col-1].isAlive() );
+        }
+      }
+
+      //if(this.cells[row][col].isAlive()){liveNeighbors++}
+
+      return liveNeighbors;
+    } else {
+      return null
+    }
+
+    function addIfAlive(test){ if(test){ return 1; } return 0; }
+  },
+  liveOrDie: function(alive, neighbors) {
+    if(neighbors < 2 || neighbors > 3 || (alive == false && neighbors == 2)){
+      return false;
+    }
+    return true;
+  },
+  resetBoard: function(){
+    this.cells = null;
+    this.generation = 0;
+  },
+  newBoard: function(size) {
+    this.resetBoard();
+    var board = [];
+    for(var row = 0; row < size; row++){
+      board.push([])
+      for(var col = 0; col < size; col++){
+        board[row].push( new Cell() );
+      }
+    }
+    this.cells = board;
+    return board;
+  }
+}
+
+var Cell = function() {
+  this.alive = false;
+  this.isAlive = function() {
+    return this.alive;
+  }
+  this.setAlive = function(vida){
+    if(vida == true){
+      this.alive = true;
+    } else {
+      this.alive = false;
+    }
+    return this.isAlive();
+  }
+}
+
+
+$(function(){
+  //instantiate
+  var boardSize = 80;
+  var minWaitBetweenSteps = 100; // in millisenconds
+
+
+  var timer = null;
+  $('.genStart').click(function(){
+      timer = window.setInterval(nextStep, minWaitBetweenSteps);
+  });
+  $('.genStop').click(function(){
+      window.clearInterval(timer);
+  });
+  $('.genReset').click(function(){
+      $('.genStop').click();
+      conwaysBoard.newRandomBoard(boardSize);
+      initBoard();
+
+  });
+
+  $('.genReset').click();
+
+
+  function nextStep(){
+    conwaysBoard.stepForward();
+    syncDisplay();
+  }
+
+  function initBoard(){
+    $("#conway").empty();
+    for(var row = 0; row < conwaysBoard.cells.length; row++){
+      var r = $("<div>").addClass('row').attr('id', 'row'+row);
+      for(var col = 0; col < conwaysBoard.cells[row].length; col++){
+        $("<div>").addClass('cell').attr('id', 'cell'+row+col).appendTo(r);
+      }
+      r.appendTo("#conway");
+    }
+
+    syncDisplay();
+  }
+
+  //get in sync
+  function syncDisplay(){
+    var syncStart = Date.now();
+
+    for(var row = conwaysBoard.cells.length -1; row > 0; row--){
+      for(var col = conwaysBoard.cells[row].length -1; col > 0; col--){
+          if(conwaysBoard.cells[row][col].isAlive()){
+            $("#cell" + row + col).addClass('alive');
+          }else {
+            $("#cell" + row + col).removeClass('alive');
+          }
+      }
+    }
+    $('.gen span').html(conwaysBoard.generation);
+    $('.pop span').html(conwaysBoard.population);
+    $('.tme span').html(conwaysBoard.genTime);
+    $('.stm span').html(Date.now() - syncStart);
+  }
+
+
+});
+
+//# sourceMappingURL=app.js.map
