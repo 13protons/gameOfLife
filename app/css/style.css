@@ -1,0 +1,19 @@
+.hello {
+  background-color: #efefef;
+  border: 1px solid #dedede;
+}
+
+.row {
+  float: left;
+  clear: both;
+}
+
+.cell {
+  width: 5px; height: 5px;
+  margin: 1px 1px 0 0;
+  float: left;
+  background-color: #eee;
+}
+.cell.alive {
+  background-color: black;
+}

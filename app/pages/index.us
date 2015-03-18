@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= pkg.name %></title>
+
+    <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
+  </head>
+  <body>
+
+    <div id="conway"></div>
+    <p class="gen">Generation: <span></span></p>
+    <p class="pop">Population: <span></span></p>
+    <p class="tme">Stepped In: <span></span>ms</p>
+    <p class="stm">Synced In: <span></span>ms</p>
+    <button class="genStart">Start</button>
+    <button class="genStop">Stop</button>
+    <button class="genReset">Reset</button>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="<%= js %>"></script>
+  </body>
+</html>
