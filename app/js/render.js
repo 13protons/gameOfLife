@@ -1,16 +1,24 @@
 
 $(function(){
   //instantiate
-  var boardSize = 80;
-  var minWaitBetweenSteps = 100; // in millisenconds
+  var boardSize = 50;
+  var minWaitBetweenSteps = 60; // in millisenconds
 
 
   var timer = null;
   $('.genStart').click(function(){
-      timer = window.setInterval(nextStep, minWaitBetweenSteps);
+      if(timer == null){
+        timer = window.setInterval(nextStep, minWaitBetweenSteps);
+      }
   });
   $('.genStop').click(function(){
       window.clearInterval(timer);
+      timer = null;
+  });
+  $('.genClear').click(function(){
+      $('.genStop').click();
+      conwaysBoard.newBoard(boardSize);
+      initBoard();
   });
   $('.genReset').click(function(){
       $('.genStop').click();
@@ -29,10 +37,21 @@ $(function(){
 
   function initBoard(){
     $("#conway").empty();
+
+    $("#conway").on('click', '.cell', function(){
+      conwaysBoard.cells[$(this).data('row')][$(this).data('col')].setAlive(true);
+      syncDisplay();
+    })
+
+
     for(var row = 0; row < conwaysBoard.cells.length; row++){
       var r = $("<div>").addClass('row').attr('id', 'row'+row);
       for(var col = 0; col < conwaysBoard.cells[row].length; col++){
-        $("<div>").addClass('cell').attr('id', 'cell'+row+col).appendTo(r);
+        $("<div>")
+          .addClass('cell')
+          .attr('id', 'cell'+row+col)
+          .data({'row': row, 'col': col})
+          .appendTo(r);
       }
       r.appendTo("#conway");
     }
@@ -46,10 +65,14 @@ $(function(){
 
     for(var row = conwaysBoard.cells.length -1; row > 0; row--){
       for(var col = conwaysBoard.cells[row].length -1; col > 0; col--){
+          var t = $("#cell" + row + col);
+          //var alive =
           if(conwaysBoard.cells[row][col].isAlive()){
-            $("#cell" + row + col).addClass('alive');
+            t.addClass('alive');
+            t.removeClass('dead');
           }else {
-            $("#cell" + row + col).removeClass('alive');
+            if(t.hasClass('alive')){t.addClass('dead');}
+            t.removeClass('alive');
           }
       }
     }

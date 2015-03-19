@@ -15,6 +15,7 @@
     <button class="genStart">Start</button>
     <button class="genStop">Stop</button>
     <button class="genReset">Reset</button>
+    <button class="genClear">Clear</button>
 
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="<%= js %>"></script>

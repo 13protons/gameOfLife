@@ -9,11 +9,22 @@
 }
 
 .cell {
-  width: 5px; height: 5px;
-  margin: 1px 1px 0 0;
+  width: 10px; height: 10px;
+  margin: 1px;
   float: left;
-  background-color: #eee;
+  background-color: #fdfdfd;
+  border: 1px solid #fff;
+  transition: background-color 50ms linear;
+
 }
+
 .cell.alive {
-  background-color: black;
+  transition: background-color 50ms linear;
+  background-color: #00CC99;
+  border-color: #0066CC;
+}
+
+.cell.dead {
+  transition: background-color 250ms linear;
+  background-color: #CCFFFF;
 }
